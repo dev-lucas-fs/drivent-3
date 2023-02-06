@@ -20,8 +20,19 @@ async function getHotels(userId: number) {
   return hotels;
 }
 
-async function getHotelById() {
-  return 1;
+async function getHotelById(userId: number, id: number) {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (enrollment === null) throw notFoundError();
+
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket) throw notFoundError();
+  if (ticket.status === TicketStatus.RESERVED || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel)
+    throw paymentRequiredError();
+
+  const hotels = await hotelRepository.findHotelById(id);
+  if (!hotels) throw notFoundError();
+
+  return hotels;
 }
 
 const hotelsService = {
