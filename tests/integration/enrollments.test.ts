@@ -19,7 +19,6 @@ const server = supertest(app);
 describe("GET /enrollments", () => {
   it("should respond with status 401 if no token is given", async () => {
     const response = await server.get("/enrollments");
-
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
 
